@@ -45,16 +45,15 @@ def calculate_steering(current_angle, track_pos, track_sensors, speed_kmh):
     max_idx = track_sensors.index(max_dist)
     
     curve_direction = max_idx - 9
-
     turn_indicator = (left_vision - right_vision) / (left_vision + right_vision + 1.0)
     
     target_track_pos = 0.0 
 
     if front_vision < 150.0:
         if curve_direction < -1:
-            target_track_pos = 0.5 * (1.0 - (front_vision/150.0))
+            target_track_pos = 0.6 * (1.0 - (front_vision/150.0))
         elif curve_direction > 1:
-            target_track_pos = -0.5 * (1.0 - (front_vision/150.0))
+            target_track_pos = -0.6 * (1.0 - (front_vision/150.0))
     else:
         target_track_pos = 0.0
 
@@ -62,11 +61,10 @@ def calculate_steering(current_angle, track_pos, track_sensors, speed_kmh):
     distance_factor = max(0.0, min(1.0, (front_vision - lookahead_min) / 80.0)) 
     
     speed_factor = max(1.0, speed_kmh / 100.0)
-    angle_weight = 4.2 / math.sqrt(speed_factor)
-    pos_weight = 0.65 / speed_factor
+    angle_weight = 4.0 / math.sqrt(speed_factor)
+    pos_weight = 0.7 / speed_factor
 
     steer_angle_corr = current_angle * angle_weight
-    
     steer_pos_corr = (track_pos - target_track_pos) * pos_weight 
     
     steer = steer_angle_corr - steer_pos_corr + (turn_indicator * 0.1 * (1.0 - distance_factor))
@@ -92,11 +90,11 @@ def calculate_braking(speed_kmh, track_sensors, speed_z, steer_intent):
     angle_severity = abs(max_idx - 9)
     
     if angle_severity <= 1:
-        target_speed_kmh = max(180.0, max_dist * 1.5)
+        target_speed_kmh = max(185.0, max_dist * 1.5)
     elif angle_severity <= 4:
-        target_speed_kmh = max(80.0, max_dist * 0.95)
+        target_speed_kmh = max(85.0, max_dist * 0.95)
     else:
-        target_speed_kmh = max(45.0, max_dist * 0.6)
+        target_speed_kmh = max(50.0, max_dist * 0.6)
     
     if speed_kmh <= target_speed_kmh:
         return 0.0 
@@ -127,7 +125,6 @@ def drive_smart(c):
     rpm = S['rpm']
     current_gear = S['gear']
     
-
     front_wall = S['track'][9]
     if current_speed < 5.0 and front_wall < 6.0:
         R['gear'] = -1                 
@@ -135,7 +132,6 @@ def drive_smart(c):
         R['brake'] = 0.0
         R['steer'] = -S['angle']       
         return 
-
 
     R['steer'] = calculate_steering(S['angle'], S['trackPos'], S['track'], current_speed)
     R['brake'] = calculate_braking(current_speed, S['track'], speed_z, R['steer'])
