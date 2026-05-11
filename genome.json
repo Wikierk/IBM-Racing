@@ -1,0 +1,10 @@
+{
+  "dec_base": 17.945055056657683,
+  "dec_factor": 0.10956649315084618,
+  "safety_margin_base": 3.662408917599504,
+  "safety_margin_factor": 0.05571329527595702,
+  "steer_apex_width": 1.3594452510730326,
+  "accel_slip_base": 3.7792792117478,
+  "accel_slip_fast": 37.5007596636803,
+  "trail_braking": 0.2125787371935208
+}
